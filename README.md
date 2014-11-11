@@ -1,6 +1,8 @@
 # Resumatic
 
-An opensource resume you can publish to github pages in a click.
+An open source resume you can host on github pages with a click.
+
+![](https://cloud.githubusercontent.com/assets/27563/4994202/8f87b14a-696b-11e4-8bfd-15befcc4cef0.png)
 
 Demo: <http://gerad.github.io/resume>
 
@@ -30,16 +32,16 @@ I just wrapped up a project. While looking for what's next I got feedback from s
 3. Make tweaks to the html, css, and js files.
 4. Commit them.
 5. Run `./build`
-6. The changes will automatically be committed to the `gh-pages` branch.
+6. The changes will automatically be committed to the `gh-pages` branch. (You will need to push the changes to publish them).
 
 ## Helping
 
 As you can tell, I'm not a designer. Design feedback and advice appreciated.
 
-Pull requests also appreciated.
+Pull requests also appreciated. In particular, the build script is kinda half-baked.
 
 ## License
 
 MIT
 
-But if you can credit <http://gerad.suyderhoud.com/> in your README.md, that'd be cool.
+But if you link to <http://gerad.suyderhoud.com/> in your README, that'd be cool.
