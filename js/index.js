@@ -144,16 +144,15 @@ app.directive('headerTransmorpher', function() {
   };
 });
 
-/*
 app.directive('skillHighlights', function() {
-  function controller($scope) {
-    this.skillClassName = function(skill) {
-      return skill.replace(/\W/g,'-').toLowerCase();
-    }
-
+  function controller($scope, $element) {
     this.highlight = function(skill) {
-      console.log('highlight', skill);
-    }
+      $element.find('[skill="'+skill+'"]').addClass('highlight');
+    };
+
+    this.unhighlight = function(skill) {
+      $element.find('[skill]').removeClass('highlight');
+    };
   }
 
   return {
@@ -164,30 +163,32 @@ app.directive('skillHighlights', function() {
 
 app.directive('skill', function() {
   return {
-    restrict: 'C',
+    restrict: 'A',
     require: '^skillHighlights',
     link: function(scope, element, attrs, skillHighlights) {
+      var skill = attrs.skill;
       function mouseover() {
-        skillHighlights.highlight(scope.skill);
+        skillHighlights.highlight(skill);
       }
 
-      scope.$on('skill-hover', function() {
-        console.log('skill-over', arguments);
-      });
+      function mouseout() {
+        skillHighlights.unhighlight(skill);
+      }
 
       element.on('mouseover', mouseover);
+      element.on('mouseout', mouseout);
       scope.$on('$destroy', function() {
         element.off('mouseover', mouseover);
+        element.off('mouseout', mouseout);
       });
     }
   };
 });
-*/
 
 app.directive('skills', function() {
   return {
     scope: { skills: "=" },
-    template: '<span class="skill" ng-repeat="skill in skills">{{skill}}</span>'
+    template: '<span class="skill" skill="{{skill}}" ng-repeat="skill in skills">{{skill}}</span>'
   };
 });
 

@@ -76,12 +76,12 @@ h2 {
   background-color: #F9F9F9;
   border-radius: 4px;
   color: #222222;
+  /*transition: color 0.5s, background-color 0.5s;*/
 }
 
 .skill:hover,
 .skill.highlight {
-  /*background-color: #E9F4FF;*/
-  /*color: #4966A6;*/
+  background-color: #FCFFE9;
   cursor: default;
 }
 
