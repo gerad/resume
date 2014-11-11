@@ -12,9 +12,7 @@ Demo: <http://gerad.github.io/resume>
 
 ## Why?
 
-I just wrapped up a project, and while looking for what's next, I got feedback from several recruiters that just pointing people at a LinkedIn profile was not enough.
-
-I've tested this with several recruiters and hiring managers, and have gotten overwhelmingly positive feedback, so felt I could share.
+I just wrapped up a project. While looking for what's next I got feedback from several recruiters that pointing people at a LinkedIn profile was not enough. Everybody wanted a separate resume.
 
 ## Features
 
