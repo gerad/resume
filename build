@@ -1,0 +1,135 @@
+#!/usr/bin/env ruby
+
+ref = `git describe --always`.strip
+infile = "./index.html"
+outfile = "./tmp/index-#{ref}.html"
+
+lines = File.readlines(infile)
+
+# inline resume json
+out = []
+lines.each do |line|
+  if (match = /(\s+)<!-- inline resume json -->/.match(line))
+    space = match[1]
+    fname = "index.json"
+
+    out << "#{space}<!-- begin json inlined from #{fname}@#{ref} -->\n"
+    out << "#{space}<script>\n"
+    out << "#{space}  window.resume =\n"
+    File.readlines(fname).each do |json_line|
+      out << "#{space}    #{json_line}"
+    end
+    out << "#{space}</script>\n"
+    out << "#{space}<!-- end json inlined from #{fname}@#{ref} -->\n"
+ else
+    out << line
+  end
+end
+lines = out
+
+# inline css files
+out = []
+lines.each do |line|
+  if (match = /(\s+)<link\s+href="\/([^\/][^"]+)"\s+rel="stylesheet">/.match(line)) && match[2]
+    space = match[1]
+    fname = match[2]
+    out << "#{space}<!-- begin css inlined from #{fname}@#{ref} -->\n"
+    out << "#{space}<style>\n"
+    File.readlines(File.join('.', fname)).each do |css_line|
+      out << "#{space}  #{css_line}"
+    end
+    out << "#{space}</style>\n"
+    out << "#{space}<!-- end css inlined from #{fname}@#{ref} -->\n"
+  else
+    out << line
+  end
+end
+lines = out
+
+# inline js files
+out = []
+lines.each do |line|
+  if (match = /(\s+)<script\s+src="\/([^\/][^"]+)"><\/script>/.match(line)) && match[2]
+    space = match[1]
+    fname = match[2]
+    out << "#{space}<!-- begin js inlined from #{fname}@#{ref} -->\n"
+    out << "#{space}<script>\n"
+    File.readlines(File.join('.', fname)).each do |js_line|
+      out << "#{space}  #{js_line}"
+    end
+    out << "#{space}</script>\n"
+    out << "#{space}<!-- end js inlined from #{fname}@#{ref} -->\n"
+  else
+    out << line
+  end
+end
+lines = out
+
+# inline angular templates
+out = []
+lines.each do |line|
+  if (match = /(\s+)<!-- inline angular templates -->/.match(line))
+    space = match[1]
+
+    Dir['html/*'].each do |fname|
+      out << "#{space}<!-- begin html inlined from #{fname}@#{ref} -->\n"
+      out << "#{space}<script type='text/ng-template' id='/#{fname}'>\n"
+      File.readlines(File.join('.', fname)).each do |html_line|
+        out << "#{space}  #{html_line}"
+      end
+      out << "#{space}</script>\n"
+      out << "#{space}<!-- end html inlined from #{fname}@#{ref} -->\n"
+    end
+  else
+    out << line
+  end
+end
+lines = out
+
+# inline angular resume json cache hack
+out = []
+lines.each do |line|
+  if (match = /(\s+)<!-- inline angular resume json cache hack -->/.match(line))
+    space = match[1]
+
+    js = <<-ENDJS.strip
+(function() {
+  var app = angular.module('gsResume');
+  app.config(function($httpProvider) {
+    var json = JSON.stringify(window.resume);
+    var cache = {
+      put: function() {}, /* noop */
+      get: function(path) {
+        if (path !== "/index.json") { return; }
+        return [200, json, {}, "OK"];
+      }
+    };
+    $httpProvider.defaults.cache = cache;
+  });
+})();
+    ENDJS
+
+    out << "#{space}<!-- begin inline angular resume json cache hack -->\n"
+    out << "#{space}<script>\n"
+    js.split("\n").each do |js_line|
+      out << "#{space}  #{js_line}\n"
+    end
+    out << "#{space}</script>\n"
+    out << "#{space}<!-- end inline angular resume json cache hack -->\n"
+  else
+    out << line
+  end
+end
+lines = out
+
+File.write(outfile, lines.join)
+
+def self.run(cmd)
+  puts cmd
+  puts `#{cmd}`
+  raise "`#{cmd}` failed" unless $?.success?
+end
+
+run "git checkout gh-pages"
+run "cp #{outfile} #{infile}"
+run "git commit -am #{ref}"
